@@ -13,10 +13,10 @@ open class ActivityBar: UIView {
     private let waitTime: TimeInterval = 0.5
     
     //MARK: Lifecycle
-    public func initializeBar() {
+    open func initializeBar() {
         super.awakeFromNib()
         
-        self.bar.backgroundColor = self.color
+        //self.bar.backgroundColor = self.color
         self.bar.translatesAutoresizingMaskIntoConstraints = false
         
         self.addSubview(self.bar)
@@ -32,11 +32,11 @@ open class ActivityBar: UIView {
             NSLayoutConstraint(item: self.bar, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1, constant: 0)
         )
         self.addConstraint(
-            NSLayoutConstraint(item: self.bar, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1, constant: 0)
+            NSLayoutConstraint(item: self.bar, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1, constant: 2)
         )
     }
     
-    func animate() {
+    @objc func animate() {
         let toZero: NSLayoutConstraint
         let toWidth: NSLayoutConstraint
         
@@ -82,15 +82,16 @@ open class ActivityBar: UIView {
             } else {
                 self.isHidden = true
             }
-        
-            if let progress = self.progress {
-                
-                if progress > 1.0 {
+            
+            if let prog = self.progress {
+                if prog > 1.0 {
                     self.progress = 1.0
-                } else if progress < 0 {
+                } else if prog < 0 {
                     self.progress = 0
                 }
-                
+            }
+            
+            if let progress = self.progress {
                 UIView.animate(withDuration: self.duration, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0, options: [], animations: {
                     self.barLeft.constant = 0
                     self.barRight.constant = self.frame.size.width - (CGFloat(progress) * self.frame.size.width)
@@ -125,7 +126,7 @@ open class ActivityBar: UIView {
         
         self.isHidden = false
         
-        self.animationTimer = Timer.scheduledTimer(timeInterval: self.duration + self.waitTime, target: self, selector: "animate", userInfo: nil, repeats: true)
+        self.animationTimer = Timer.scheduledTimer(timeInterval: self.duration + self.waitTime, target: self, selector: #selector(animate), userInfo: nil, repeats: true)
         self.animate()
     }
     
